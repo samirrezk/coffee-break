@@ -1,0 +1,4 @@
+text j mc 25,5 35 Hello World
+circle 25,5 3
+zoom e
+qsave
