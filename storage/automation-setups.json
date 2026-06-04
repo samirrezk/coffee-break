@@ -1,0 +1,23 @@
+{
+  "VOAeSnMY98BxDGtxhn5Ik5qx0C6y9r1uT0cy3J00emslZk7N": {
+    "engine": "Autodesk.AutoCAD+25_1",
+    "bundleHash": "a1868448afdcc36295b99203f194c9e580c8650aa9175858c52ed72ae73c1d60",
+    "appBundleQualifiedId": "VOAeSnMY98BxDGtxhn5Ik5qx0C6y9r1uT0cy3J00emslZk7N.RunScriptAppBundle+prod",
+    "activityQualifiedId": "VOAeSnMY98BxDGtxhn5Ik5qx0C6y9r1uT0cy3J00emslZk7N.RunScriptActivity+prod",
+    "ownerId": "VOAeSnMY98BxDGtxhn5Ik5qx0C6y9r1uT0cy3J00emslZk7N",
+    "bundleMode": "original-bundle",
+    "scriptOverride": null,
+    "revision": 4,
+    "lastConfiguredAt": "2026-04-20T15:21:29.596Z",
+    "health": {
+      "engine": "Autodesk.AutoCAD+26_0",
+      "bundleHash": "66afb7cb39ef8b5e574791b0ba37bdf1c59365c499646b9d82db666cd1287c32",
+      "appBundleQualifiedId": "VOAeSnMY98BxDGtxhn5Ik5qx0C6y9r1uT0cy3J00emslZk7N.isHealthyAppBundle+prod",
+      "activityQualifiedId": "VOAeSnMY98BxDGtxhn5Ik5qx0C6y9r1uT0cy3J00emslZk7N.isHealthyActivity+prod",
+      "ownerId": "VOAeSnMY98BxDGtxhn5Ik5qx0C6y9r1uT0cy3J00emslZk7N",
+      "revision": 4,
+      "lastConfiguredAt": "2026-04-21T13:55:34.802Z",
+      "packageXmlPatched": true
+    }
+  }
+}

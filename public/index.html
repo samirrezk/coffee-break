@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Coffee Break</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext x=%2750%25%27 y=%2758%25%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27 font-size=%2784%27%3E%E2%98%95%3C/text%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="app-bar-title">
+            <strong>Coffee Break</strong>
+            <span class="app-bar-note">Run AutoCAD Script with Autodesk Platform Services Automation API</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <input id="client-id" class="top-input" type="text" placeholder="APS Client ID" aria-label="APS Client ID" autocomplete="off" />
+          <input id="client-secret" class="top-input" type="password" placeholder="APS Client Secret" aria-label="APS Client Secret" autocomplete="new-password" />
+          <button class="secondary-btn compact-btn" id="save-credentials-btn" type="button">Save credentials</button>
+          <button class="primary-btn compact-btn" id="login-btn" type="button">Sign in</button>
+          <input id="nickname-input" class="hidden" type="text" aria-hidden="true" tabindex="-1" autocomplete="off" />
+        </div>
+      </header>
+
+      <div class="workspace" id="workspace-shell">
+        <aside class="sidebar" id="left-panel">
+          <button class="panel-toggle-btn panel-toggle-btn--left" id="left-panel-toggle-btn" type="button" aria-label="Close left panel" aria-expanded="true" aria-controls="left-panel" title="Close left panel">
+            <span class="panel-toggle-btn__icon" aria-hidden="true">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8L10 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </span>
+          </button>
+          <section class="sidebar-section">
+            <div class="sidebar-heading">
+              <span>Hub &amp; project browser</span>
+              <div class="sidebar-icons">
+                <button
+                  id="refresh-hubs-btn"
+                  aria-label="Refresh hubs and projects"
+                  data-tooltip-title="Refresh hubs"
+                  data-tooltip="Reload ACC hubs and the current project list."
+                  data-tooltip-icon="refresh"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 13.81L21.78 4.21001L18.91 6.28001C16.8917 3.85472 13.7508 2.66343 10.6319 3.14028C7.51288 3.61713 4.87139 5.69247 3.66999 8.61001L7.46999 9.91001C8.28422 8.14041 10.0521 7.00478 12 7.00001C13.4055 7.00144 14.7439 7.60153 15.68 8.65001L12.86 10.71L22 13.81ZM16.42 8.00001C15.1903 6.61418 13.3844 5.8815 11.5368 6.0188C9.68911 6.1561 8.01134 7.14765 6.99999 8.70001L5.05999 8.00001C6.37442 5.73857 8.71138 4.26254 11.3182 4.0473C13.925 3.83205 16.4724 4.90479 18.14 6.92001L18.74 7.64001L20.74 6.16001L20.89 12.4L14.97 10.4L17.17 8.80001L16.42 8.00001ZM12.7553 16.9206C14.4097 16.6653 15.8266 15.599 16.53 14.08L20.34 15.42C19.1491 18.3578 16.5005 20.4524 13.3673 20.9342C10.2342 21.4161 7.07862 20.2142 5.05999 17.77L2.26999 19.77L2.04999 10.17L11.14 13.27L8.29999 15.35C9.42856 16.5863 11.1009 17.1759 12.7553 16.9206ZM5.82999 17.09C7.34929 18.9322 9.61209 19.9995 12 20C14.8837 20.0258 17.5582 18.4976 19 16L17 15.29C15.9791 16.8333 14.3033 17.8192 12.4584 17.9619C10.6135 18.1045 8.806 17.388 7.55999 16.02L6.81999 15.2L8.99999 13.6L3.07999 11.58L3.22999 17.83L5.22999 16.36L5.82999 17.09Z" fill="currentColor"></path></svg>
+                </button>
+              </div>
+            </div>
+            <div id="project-tree" class="project-tree"></div>
+          </section>
+
+          <section class="sidebar-footer">
+            <div class="footer-title">References</div>
+            <a href="https://www.autodesk.com/products/autodesk-platform-services/overview" target="_blank" rel="noreferrer">APS Overview</a>
+          </section>
+        </aside>
+
+        <div class="content-layout" id="content-layout">
+          <main class="main-area">
+            <div class="notice notice--info" id="top-notice" role="status" aria-live="polite">
+              <div class="notice-icon" id="notice-icon-slot">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+                  <path d="M12 10.4v6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                  <circle cx="12" cy="7" r="1.1" fill="currentColor"></circle>
+                </svg>
+              </div>
+              <div class="notice-copy">
+                <strong>Coffee Break is connected to live APS and ACC flows.</strong>
+                <span id="status-text">Save APS credentials, sign in, and choose an ACC folder to browse DWGs and submit workitems.</span>
+              </div>
+              <button class="notice-dismiss" id="dismiss-notice" aria-label="Dismiss message">Dismiss</button>
+            </div>
+
+            <section class="card file-browser">
+              <div class="card-head card-head--stacked">
+                <div class="browser-header">
+                  <div>
+                    <h2>Project files</h2>
+                    <p>Browse ACC folders in a Weave-style file list, open folders from the name column, view filtered references, use the row menu for Reference JSON view and export, and run the bundle on any selected source or reference DWG.</p>
+                  </div>
+                  <div class="browser-header-controls">
+                    <div class="browser-summary hidden" aria-hidden="true">
+                      <span class="session-pill" id="selection-pill">0 selected</span>
+                      <span class="status-tag neutral" id="jobs-summary">0 jobs</span>
+                      <span class="selected-summary" id="selected-summary"></span>
+                    </div>
+                    <div class="browser-toolbar">
+                      <button
+                        class="primary-btn browser-action-btn"
+                        id="run-selected-btn"
+                        type="button"
+                        disabled
+                        data-tooltip-title="Run automation"
+                        data-tooltip="Runs the selected source and reference DWGs together. If nothing is selected, the current folder tree is submitted."
+                        data-tooltip-icon="bolt"
+                      >
+                        Run automation
+                      </button>
+                      <button class="secondary-btn browser-action-btn hidden" id="run-references-btn" type="button">Run references</button>
+                      <button class="secondary-btn browser-action-btn hidden" id="run-folder-btn" type="button">Run folder</button>
+                      <button class="secondary-btn browser-action-btn hidden" id="refresh-folder-btn" type="button">Refresh folder</button>
+                      <button
+                        class="secondary-btn browser-action-btn browser-action-btn--icon"
+                        id="clear-selection-btn"
+                        disabled
+                        data-tooltip-title="Clear log"
+                        data-tooltip="Removes the automation jobs and inline log history from this browser session."
+                        data-tooltip-icon="clear"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 5H16V3.13C16.0287 2.54432 15.5848 2.04273 15 2H8C7.42253 2.05736 6.9867 2.54984 7 3.13V5H4V9H5V22H18V9H19V5ZM15 3V5H14V4H9V5H8V3H15ZM17 21H6V9H17V21ZM18 8H5V6H18V8Z" fill="currentColor"></path></svg>
+                        <span>Clear Log</span>
+                      </button>
+                      <button
+                        class="secondary-btn browser-action-btn browser-action-btn--icon"
+                        id="refresh-jobs-btn"
+                        data-tooltip-title="Refresh"
+                        data-tooltip="Reload the current ACC folder and refresh inline job states."
+                        data-tooltip-icon="refresh"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 13.81L21.78 4.21001L18.91 6.28001C16.8917 3.85472 13.7508 2.66343 10.6319 3.14028C7.51288 3.61713 4.87139 5.69247 3.66999 8.61001L7.46999 9.91001C8.28422 8.14041 10.0521 7.00478 12 7.00001C13.4055 7.00144 14.7439 7.60153 15.68 8.65001L12.86 10.71L22 13.81ZM16.42 8.00001C15.1903 6.61418 13.3844 5.8815 11.5368 6.0188C9.68911 6.1561 8.01134 7.14765 6.99999 8.70001L5.05999 8.00001C6.37442 5.73857 8.71138 4.26254 11.3182 4.0473C13.925 3.83205 16.4724 4.90479 18.14 6.92001L18.74 7.64001L20.74 6.16001L20.89 12.4L14.97 10.4L17.17 8.80001L16.42 8.00001ZM12.7553 16.9206C14.4097 16.6653 15.8266 15.599 16.53 14.08L20.34 15.42C19.1491 18.3578 16.5005 20.4524 13.3673 20.9342C10.2342 21.4161 7.07862 20.2142 5.05999 17.77L2.26999 19.77L2.04999 10.17L11.14 13.27L8.29999 15.35C9.42856 16.5863 11.1009 17.1759 12.7553 16.9206ZM5.82999 17.09C7.34929 18.9322 9.61209 19.9995 12 20C14.8837 20.0258 17.5582 18.4976 19 16L17 15.29C15.9791 16.8333 14.3033 17.8192 12.4584 17.9619C10.6135 18.1045 8.806 17.388 7.55999 16.02L6.81999 15.2L8.99999 13.6L3.07999 11.58L3.22999 17.83L5.22999 16.36L5.82999 17.09Z" fill="currentColor"></path></svg>
+                        <span>Refresh</span>
+                      </button>
+
+                      <button
+                        class="secondary-btn browser-action-btn browser-action-btn--icon"
+                        id="ref-canvas-btn"
+                        data-tooltip-title="Ref Canvas"
+                        data-tooltip="Open the interactive relationship canvas for the selected DWG, or for the full current folder tree when no file is selected."
+                        data-tooltip-icon="file"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5A2.5 2.5 0 1 0 6.5 11.5A2.5 2.5 0 1 0 6.5 6.5Z" fill="currentColor"></path><path d="M17.5 3.5A3.5 3.5 0 1 0 17.5 10.5A3.5 3.5 0 1 0 17.5 3.5Z" fill="currentColor"></path><path d="M16.5 13.5A4.5 4.5 0 1 0 16.5 22.5A4.5 4.5 0 1 0 16.5 13.5Z" fill="currentColor"></path><path d="M8.7 9.3l5.6-2.1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path><path d="M8.8 10.8l4.8 5.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path><path d="M15.6 9.9v3.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                        <span>Ref Canvas</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="project-meta">
+                <div class="project-meta-slot">
+                  <span class="meta-label">Hub</span>
+                  <strong id="current-hub">-</strong>
+                </div>
+                <div class="project-meta-slot">
+                  <span class="meta-label">Project</span>
+                  <strong id="current-project">-</strong>
+                </div>
+                <div class="project-meta-slot">
+                  <span class="meta-label">Folder</span>
+                  <strong id="browser-state">No folder selected</strong>
+                </div>
+                <div class="project-meta-slot">
+                  <span class="meta-label">Selected</span>
+                  <strong id="selected-count">0 items</strong>
+                </div>
+              </div>
+
+              <div id="top-folder-pills" class="top-folder-row hidden" aria-hidden="true"></div>
+              <nav id="breadcrumb" class="breadcrumb-row is-empty" aria-label="Folder path"></nav>
+
+              <section class="ref-canvas-shell" id="ref-canvas-shell" aria-hidden="true">
+                <div class="ref-canvas-shell__inner">
+                  <div class="ref-canvas-head">
+                    <div>
+                      <h3>Reference Canvas</h3>
+                      <p id="ref-canvas-subtitle">Pan, zoom, drag bubbles into place, Ctrl-select multiple files, and select a bubble to focus it and expand first-level relationships for the selected DWG or current folder tree.</p>
+                    </div>
+                    <div class="ref-canvas-toolbar">
+                      <button class="secondary-btn compact-btn" type="button" id="ref-canvas-fit-btn">Fit</button>
+                      <button class="secondary-btn compact-btn" type="button" id="ref-canvas-reset-btn">Reset</button>
+                      <button class="secondary-btn compact-btn" type="button" id="ref-canvas-close-btn">Hide</button>
+                    </div>
+                  </div>
+
+                  <div class="ref-canvas-status hidden" id="ref-canvas-status"></div>
+
+                  <div class="ref-canvas-stage" id="ref-canvas-stage">
+                    <svg id="ref-canvas-svg" class="ref-canvas-svg" viewBox="0 0 1200 720" preserveAspectRatio="xMidYMid meet" aria-label="Reference bubble graph"></svg>
+                    <div class="ref-canvas-empty" id="ref-canvas-empty">Open Ref Canvas to load a DWG relationship graph.</div>
+                    <div class="ref-canvas-legend" id="ref-canvas-legend" aria-label="Reference Canvas legend">
+                      <span><i class="legend-dot"></i> File size</span>
+                      <span><i class="legend-line legend-line--black"></i> Attachment</span>
+                      <span><i class="legend-line legend-line--green"></i> Overlay</span>
+                      <span><i class="legend-line legend-line--dashed"></i> Non-DWG</span>
+                    </div>
+                    <div class="ref-canvas-health-panel hidden" id="ref-canvas-health-panel" aria-live="polite" aria-hidden="true">
+                      <div class="ref-canvas-health-panel__head">
+                        <strong>Health Report</strong>
+                        <button type="button" class="ref-canvas-health-badge" id="ref-canvas-health-badge" disabled>Idle</button>
+                      </div>
+                      <div class="ref-canvas-health-copy" id="ref-canvas-health-copy">Select a DWG bubble to run the drawing health automation.</div>
+                      <pre class="ref-canvas-health-json hidden" id="ref-canvas-health-json"></pre>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th class="select-col">
+                        <label class="check-wrap header-check" aria-label="Select all visible file rows">
+                          <input id="select-all" type="checkbox" />
+                          <span></span>
+                        </label>
+                      </th>
+                      <th>Name</th>
+                      <th>Version</th>
+                      <th>Date Modified</th>
+                      <th>File Size</th>
+                      <th>Job Status</th>
+                      <th class="actions-col" aria-label="Actions"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="file-table-body">
+                    <tr>
+                      <td colspan="7" class="table-empty-cell">Sign in to browse ACC hubs, projects, folders, and DWG files.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="card jobs-card">
+              <div class="card-head">
+                <div>
+                  <div class="card-title-inline">
+                    <h2>Automation Jobs</h2>
+                    <button
+                      type="button"
+                      class="heading-icon-link"
+                      id="open-jobs-file-btn"
+                      aria-label="Open jobs.json in browser"
+                      title="Open jobs.json in browser"
+                      data-tooltip-title="Open jobs.json in browser"
+                      data-tooltip="Launches the default web browser on the machine running this app and opens the persistent storage/jobs.json log file."
+                      data-tooltip-footer="Uses your system default browser"
+                      data-tooltip-icon="log"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <polygon points="18 18 6 18 6 6 10 6 10 5 5 5 5 19 19 19 19 14 18 14 18 18" fill="currentColor" fill-rule="evenodd"></polygon>
+                        <path d="M11.88,5.05,14,7.17l-3.54,3.54,2.83,2.83L16.83,10,19,12.12l1.41-8.48Zm6.36,5L16.81,8.57l-3.53,3.54-1.4-1.4,3.53-3.54L14,5.76l5.15-.91Z" fill="currentColor" fill-rule="evenodd"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  <p>Recent APS workitems, output logs, and publish-back state for this browser session.</p>
+                </div>
+                <span class="status-tag neutral" id="jobs-summary-duplicate">0 jobs</span>
+              </div>
+              <div class="progress-card hidden" id="progress-card">
+                <div class="progress-meta">
+                  <span class="meta-label">Submitting or polling workitems</span>
+                  <strong id="progress-label">Waiting for workitems</strong>
+                </div>
+                <div class="progress-detail" id="progress-detail">Staging inputs and monitoring Design Automation phases.</div>
+                <div class="progress-phases" id="progress-phases" aria-label="Workitem progress phases"></div>
+                <img src="/public/assets/progress-bar.gif" alt="Progress animation" />
+              </div>
+              <div class="job-list-empty" id="jobs-empty">No Automation jobs in this session yet.</div>
+              <div class="mini-job-list hidden" id="mini-job-list" aria-hidden="true"></div>
+              <div class="job-list" id="job-list"></div>
+            </section>
+          </main>
+
+          <aside class="settings-panel" id="right-panel">
+            <button class="panel-toggle-btn panel-toggle-btn--right" id="right-panel-toggle-btn" type="button" aria-label="Close right panel" aria-expanded="true" aria-controls="right-panel" title="Close right panel">
+              <span class="panel-toggle-btn__icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3L11 8L6 13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </span>
+            </button>
+            <section class="card settings-card settings-card--flat">
+              <div class="card-head card-head--tight">
+                <div>
+                  <h2>Automation Settings</h2>
+                  <p>Manage engine, script, and bundle setup</p>
+                </div>
+              </div>
+
+              <label class="field">
+                <span>AutoCAD engine</span>
+                <select id="engine-select"></select>
+              </label>
+
+              <label class="field field--file">
+                <span>Override Default Script</span>
+                <input id="script-file" type="file" accept=".scr" />
+                <small id="script-name">Using bundle default script</small>
+              </label>
+
+              <div class="button-row button-row--compact">
+                <button class="secondary-btn" id="upload-script-btn">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.1 2L6 10H9V16H15V10H18L12.1 2ZM14 9V15H10V9H8L12.06 3.67L16 9H14ZM7 18H17V16H21V22H3V16H7V18ZM4 21H20V17H18V19H6V17H4V21Z" fill="currentColor"></path></svg>
+                  <span>Upload SCR</span>
+                </button>
+                <button class="secondary-btn" id="clear-script-btn" data-tooltip-title="Clear SCR" data-tooltip="Remove the staged override and return to the default bundle script." data-tooltip-icon="clear" data-tooltip-side="left">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 5H16V3.13C16.0287 2.54432 15.5848 2.04273 15 2H8C7.42253 2.05736 6.9867 2.54984 7 3.13V5H4V9H5V22H18V9H19V5ZM15 3V5H14V4H9V5H8V3H15ZM17 21H6V9H17V21ZM18 8H5V6H18V8Z" fill="currentColor"></path></svg>
+                  <span>Clear SCR</span>
+                </button>
+              </div>
+
+              <div class="bundle-action-row">
+                <button class="primary-btn" id="create-bundle-btn" type="button" data-tooltip-side="left">Create Bundle</button>
+              </div>
+            </section>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-disclaimer" aria-label="Disclaimer">experimental | created with ai and human &#129504; not developed or supported by autodesk</div>
+
+    <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+    <div id="global-tooltip" class="weave-tooltip hidden" role="tooltip" aria-hidden="true" data-side="top">
+      <div class="weave-tooltip__badge" aria-hidden="true"></div>
+      <div class="weave-tooltip__arrow"></div>
+      <div class="weave-tooltip__surface">
+        <div class="weave-tooltip__header">
+          <strong class="weave-tooltip__title"></strong>
+          <div class="weave-tooltip__meta"></div>
+        </div>
+        <div class="weave-tooltip__body"></div>
+        <div class="weave-tooltip__footer"></div>
+      </div>
+    </div>
+
+    <script src="/public/app.js" defer></script>
+  </body>
+</html>
