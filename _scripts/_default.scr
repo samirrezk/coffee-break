@@ -1,1 +1,9 @@
-
+;; aps design automation: default non-invasive purge
+;;
+(command "_.-purge" "_regapps" "*" "_n")
+(command "_.-purge" "_ltypes" "*" "_n")
+(command "_.-purge" "_materials" "*" "_n")
+(command "_.-scalelistedit" "_d" "*" "_e")
+(command "_.audit" "_n")
+(command "_.aeccpurgeacanodobjects")
+._qsave
